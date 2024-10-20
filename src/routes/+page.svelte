@@ -1,18 +1,12 @@
 <script lang="ts">
+	export let data: { data: Event[] }
+
+	import type { Event } from "$lib/types/index"
 	import Calendar from "$lib/components/calendar.svelte"
 
-	type Event = {
-		date: Date
-		content: string
-		mood: "good" | "bad" | "neutral"
-	}
+	console.log(data.data)
 
-	let dummyEvents: Event[] = [
-		{ date: new Date("2024-10-01"), content: "Event 3", mood: "good" },
-		{ date: new Date("2024-10-03"), content: "Event 5", mood: "bad" },
-		{ date: new Date("2024-10-05"), content: "Event 5", mood: "neutral" },
-	]
-	dummyEvents.sort((a, b) => a.date.getTime() - b.date.getTime())
+	//data.data.sort((a, b) => a.date.getTime() - b.date.getTime())
 
 	let accessCode = ""
 	let correctAccess = false
@@ -72,7 +66,7 @@
 		{/if} -->
 
 		{#if !correctAccess}
-			<Calendar events={dummyEvents} />
+			<Calendar events={data.data} />
 		{/if}
 	</div>
 </section>

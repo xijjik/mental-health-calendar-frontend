@@ -1,11 +1,7 @@
 <script lang="ts">
-	type Event = {
-		date: Date
-		content: string
-		mood: "good" | "bad" | "neutral"
-	}
-
 	export let events: Event[] = []
+
+	import type { Event } from "$lib/types/index"
 	let currentDate: Date = new Date()
 	let selectedDate: Date | null = null
 	let showModal: boolean = false
