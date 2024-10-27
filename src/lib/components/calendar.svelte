@@ -21,14 +21,24 @@
 
 	function handleDayClick(day: number): void {
 		selectedDate = new Date(year, month, day)
+		console.log("Selected date:", selectedDate.toISOString())
 		showModal = true
-		const selectedEvent = events.find(
-			(event) => event.date.toDateString() === selectedDate!.toDateString()
-		)
+		const selectedEvent = events.find((event) => {
+			const eventDate = new Date(event.date)
+			const adjustedEventDate = new Date(
+				eventDate.getTime() + eventDate.getTimezoneOffset() * 60000
+			)
+			return (
+				adjustedEventDate.toISOString().split("T")[0] ===
+				selectedDate?.toISOString().split("T")[0]
+			)
+		})
 		if (selectedEvent) {
+			console.log("Found existing event:", selectedEvent)
 			eventText = selectedEvent.content
 			mood = selectedEvent.mood
 		} else {
+			console.log("No existing event found")
 			eventText = ""
 			mood = "neutral"
 		}
@@ -36,11 +46,50 @@
 
 	async function saveEvent(): Promise<void> {
 		if (selectedDate) {
-			const newEvent = { date: selectedDate, content: eventText, mood: mood }
+			const utcNoon = new Date(
+				Date.UTC(
+					selectedDate.getFullYear(),
+					selectedDate.getMonth(),
+					selectedDate.getDate(),
+					12,
+					0,
+					0,
+					0
+				)
+			)
+
+			const eventDate = utcNoon.toISOString().split("T")[0]
+			const newEvent = { date: eventDate, content: eventText, mood: mood }
+
+			console.log("Saving event for date:", eventDate)
+			console.log("Existing events:", events)
+
+			const existingEventIndex = events.findIndex((event) => {
+				const eventDate = new Date(event.date)
+				const adjustedEventDate = new Date(
+					eventDate.getTime() + eventDate.getTimezoneOffset() * 60000
+				)
+				console.log(
+					"Comparing:",
+					adjustedEventDate.toISOString().split("T")[0],
+					"with",
+					eventDate,
+					"Original event date:",
+					event.date
+				)
+				return (
+					adjustedEventDate.toISOString().split("T")[0] ===
+					eventDate.toISOString().split("T")[0]
+				)
+			})
+
+			console.log("Existing event index:", existingEventIndex)
+
+			const method = existingEventIndex !== -1 ? "PUT" : "POST"
 
 			try {
 				const response = await fetch("/api/events", {
-					method: "POST",
+					method: method,
 					headers: {
 						"Content-Type": "application/json",
 					},
@@ -52,20 +101,20 @@
 				}
 
 				const data = await response.json()
-				console.log("Event posted successfully:", data)
-				const existingEventIndex = events.findIndex(
-					(event) => event.date.toDateString() === selectedDate?.toDateString()
-				)
+				console.log("Event saved successfully:", data)
 
 				if (existingEventIndex !== -1) {
-					events[existingEventIndex] = newEvent
+					events[existingEventIndex] = {
+						...newEvent,
+						date: new Date(eventDate),
+					}
 				} else {
-					events.push(newEvent)
+					events.push({ ...newEvent, date: new Date(eventDate) })
 				}
 
 				events = [...events]
 			} catch (error) {
-				console.error("Error posting event:", error)
+				console.error("Error saving event:", error)
 			}
 
 			showModal = false
