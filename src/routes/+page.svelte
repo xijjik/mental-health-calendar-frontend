@@ -2,8 +2,6 @@
 	import type { Event } from "$lib/types/index"
 	import Calendar from "$lib/components/calendar.svelte"
 
-	//data.data.sort((a, b) => a.date.getTime() - b.date.getTime())
-
 	let accessCode = ""
 	let correctAccess = false
 	let errorMessage = ""
@@ -24,23 +22,23 @@
 			correctAccess = true
 			errorMessage = ""
 
-			try {
-				const eventsResponse = await fetch("http://localhost:8080/events")
-				if (!eventsResponse.ok) {
-					throw new Error(`HTTP error! status: ${eventsResponse.status}`)
-				}
-				const eventsData = await eventsResponse.json()
+			// try {
+			// 	const eventsResponse = await fetch("http://localhost:8080/events")
+			// 	if (!eventsResponse.ok) {
+			// 		throw new Error(`HTTP error! status: ${eventsResponse.status}`)
+			// 	}
+			// 	const eventsData = await eventsResponse.json()
 
-				eventData = eventsData.map((event: Event) => ({
-					...event,
-					date: new Date(event.date),
-				}))
-				console.log(eventData)
-			} catch (error) {
-				console.error("Failed to fetch events:", error)
-				errorMessage = "Failed to load events. Please try again."
-				correctAccess = false
-			}
+			// 	eventData = eventsData.map((event: Event) => ({
+			// 		...event,
+			// 		date: new Date(event.date),
+			// 	}))
+			// 	console.log(eventData)
+			// } catch (error) {
+			// 	console.error("Failed to fetch events:", error)
+			// 	errorMessage = "Failed to load events. Please try again."
+			// 	correctAccess = false
+			// }
 		} else {
 			errorMessage = "Access denied. Incorrect code."
 		}

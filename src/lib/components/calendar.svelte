@@ -41,19 +41,42 @@
 			)
 
 			if (existingEventIndex !== -1) {
-				// Replace existing event
 				events[existingEventIndex] = {
 					date: selectedDate,
 					content: eventText,
 					mood: mood,
 				}
 			} else {
-				// Add new event
 				events.push({ date: selectedDate, content: eventText, mood: mood })
 			}
 
-			events = [...events] // Trigger reactivity
+			events = [...events]
 		}
+
+		// fetch("http://localhost:8080/events", {
+		// 	method: "POST",
+		// 	headers: {
+		// 		"Content-Type": "application/json",
+		// 	},
+		// 	body: JSON.stringify({
+		// 		date: selectedDate,
+		// 		content: eventText,
+		// 		mood: mood,
+		// 	}),
+		// })
+		// 	.then((response) => {
+		// 		if (!response.ok) {
+		// 			throw new Error("Network response was not ok")
+		// 		}
+		// 		return response.json()
+		// 	})
+		// 	.then((data) => {
+		// 		console.log("Event posted successfully:", data)
+		// 	})
+		// 	.catch((error) => {
+		// 		console.error("Error posting event:", error)
+		// 	})
+
 		showModal = false
 		eventText = ""
 		mood = "neutral"
