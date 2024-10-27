@@ -1,4 +1,8 @@
-# create-svelte
+# Mental health calendar
+
+Simple typescript sveltekit calendar front end for tracking mental health day by day. Connects to golang api
+
+---------------------
 
 Everything you need to build a Svelte project, powered by [`create-svelte`](https://github.com/sveltejs/kit/tree/main/packages/create-svelte).
 
