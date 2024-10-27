@@ -34,53 +34,44 @@
 		}
 	}
 
-	function saveEvent(): void {
+	async function saveEvent(): Promise<void> {
 		if (selectedDate) {
-			const existingEventIndex = events.findIndex(
-				(event) => event.date.toDateString() === selectedDate!.toDateString()
-			)
+			const newEvent = { date: selectedDate, content: eventText, mood: mood }
 
-			if (existingEventIndex !== -1) {
-				events[existingEventIndex] = {
-					date: selectedDate,
-					content: eventText,
-					mood: mood,
+			try {
+				const response = await fetch("/api/events", {
+					method: "POST",
+					headers: {
+						"Content-Type": "application/json",
+					},
+					body: JSON.stringify(newEvent),
+				})
+
+				if (!response.ok) {
+					throw new Error("Network response was not ok")
 				}
-			} else {
-				events.push({ date: selectedDate, content: eventText, mood: mood })
+
+				const data = await response.json()
+				console.log("Event posted successfully:", data)
+				const existingEventIndex = events.findIndex(
+					(event) => event.date.toDateString() === selectedDate?.toDateString()
+				)
+
+				if (existingEventIndex !== -1) {
+					events[existingEventIndex] = newEvent
+				} else {
+					events.push(newEvent)
+				}
+
+				events = [...events]
+			} catch (error) {
+				console.error("Error posting event:", error)
 			}
 
-			events = [...events]
+			showModal = false
+			eventText = ""
+			mood = "neutral"
 		}
-
-		// fetch("http://localhost:8080/events", {
-		// 	method: "POST",
-		// 	headers: {
-		// 		"Content-Type": "application/json",
-		// 	},
-		// 	body: JSON.stringify({
-		// 		date: selectedDate,
-		// 		content: eventText,
-		// 		mood: mood,
-		// 	}),
-		// })
-		// 	.then((response) => {
-		// 		if (!response.ok) {
-		// 			throw new Error("Network response was not ok")
-		// 		}
-		// 		return response.json()
-		// 	})
-		// 	.then((data) => {
-		// 		console.log("Event posted successfully:", data)
-		// 	})
-		// 	.catch((error) => {
-		// 		console.error("Error posting event:", error)
-		// 	})
-
-		showModal = false
-		eventText = ""
-		mood = "neutral"
-		console.log(events)
 	}
 
 	function changeMonth(delta: number): void {

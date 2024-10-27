@@ -2,11 +2,14 @@
 	import type { Event } from "$lib/types/index"
 	import Calendar from "$lib/components/calendar.svelte"
 
+	export let data: { events: Event[] }
+	let events: Event[] = data.events
+
+	console.log(data)
+
 	let accessCode = ""
 	let correctAccess = false
 	let errorMessage = ""
-
-	let eventData: Event[] = []
 
 	async function handleCodeSubmit() {
 		const response = await fetch("/api/verify", {
@@ -69,7 +72,7 @@
 		{/if}
 
 		{#if correctAccess}
-			<Calendar events={eventData} />
+			<Calendar {events} />
 		{/if}
 	</div>
 </section>
