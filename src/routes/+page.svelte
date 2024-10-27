@@ -5,8 +5,6 @@
 	export let data: { events: Event[] }
 	let events: Event[] = data.events
 
-	console.log(events)
-
 	let accessCode = ""
 	let correctAccess = false
 	let errorMessage = ""

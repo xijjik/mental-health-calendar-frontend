@@ -7,21 +7,17 @@ async function handleEvent(
 ): Promise<Response> {
 	const { date, content, mood } = await request.json()
 
-	const utcDate = new Date(date)
-	utcDate.setUTCHours(0, 0, 0, 0)
-	const formattedDate = utcDate.toISOString().split("T")[0]
-
 	try {
 		if (isUpdate) {
 			await sql`
 				UPDATE events
 				SET content = ${content}, mood = ${mood}
-				WHERE date = ${formattedDate}
+				WHERE date = ${date}
 			`
 		} else {
 			await sql`
 				INSERT INTO events (date, content, mood)
-				VALUES (${formattedDate}, ${content}, ${mood})
+				VALUES (${date}, ${content}, ${mood})
 			`
 		}
 

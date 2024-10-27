@@ -1,5 +1,5 @@
 export type Event = {
-	date: Date
+	date: string
 	content: string
 	mood: "good" | "bad" | "neutral"
 }

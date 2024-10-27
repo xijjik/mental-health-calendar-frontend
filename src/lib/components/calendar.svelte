@@ -3,7 +3,7 @@
 
 	import type { Event } from "$lib/types/index"
 	let currentDate: Date = new Date()
-	let selectedDate: Date | null = null
+	let selectedDate: string | null = null
 	let showModal: boolean = false
 	let eventText: string = ""
 	let mood: "good" | "bad" | "neutral" = "neutral"
@@ -20,25 +20,13 @@
 	}
 
 	function handleDayClick(day: number): void {
-		selectedDate = new Date(year, month, day)
-		console.log("Selected date:", selectedDate.toISOString())
+		selectedDate = `${year}-${(month + 1).toString().padStart(2, "0")}-${day.toString().padStart(2, "0")}`
 		showModal = true
-		const selectedEvent = events.find((event) => {
-			const eventDate = new Date(event.date)
-			const adjustedEventDate = new Date(
-				eventDate.getTime() + eventDate.getTimezoneOffset() * 60000
-			)
-			return (
-				adjustedEventDate.toISOString().split("T")[0] ===
-				selectedDate?.toISOString().split("T")[0]
-			)
-		})
+		const selectedEvent = events.find((event) => event.date === selectedDate)
 		if (selectedEvent) {
-			console.log("Found existing event:", selectedEvent)
 			eventText = selectedEvent.content
 			mood = selectedEvent.mood
 		} else {
-			console.log("No existing event found")
 			eventText = ""
 			mood = "neutral"
 		}
@@ -46,46 +34,14 @@
 
 	async function saveEvent(): Promise<void> {
 		if (selectedDate) {
-			const utcNoon = new Date(
-				Date.UTC(
-					selectedDate.getFullYear(),
-					selectedDate.getMonth(),
-					selectedDate.getDate(),
-					12,
-					0,
-					0,
-					0
-				)
+			const newEvent = { date: selectedDate, content: eventText, mood: mood }
+
+			const existingEventIndex = events.findIndex(
+				(event) => event.date === selectedDate
 			)
 
-			const eventDate = utcNoon.toISOString().split("T")[0]
-			const newEvent = { date: eventDate, content: eventText, mood: mood }
-
-			console.log("Saving event for date:", eventDate)
-			console.log("Existing events:", events)
-
-			const existingEventIndex = events.findIndex((event) => {
-				const eventDate = new Date(event.date)
-				const adjustedEventDate = new Date(
-					eventDate.getTime() + eventDate.getTimezoneOffset() * 60000
-				)
-				console.log(
-					"Comparing:",
-					adjustedEventDate.toISOString().split("T")[0],
-					"with",
-					eventDate,
-					"Original event date:",
-					event.date
-				)
-				return (
-					adjustedEventDate.toISOString().split("T")[0] ===
-					eventDate.toISOString().split("T")[0]
-				)
-			})
-
-			console.log("Existing event index:", existingEventIndex)
-
-			const method = existingEventIndex !== -1 ? "PUT" : "POST"
+			const isUpdate = existingEventIndex !== -1
+			const method = isUpdate ? "PUT" : "POST"
 
 			try {
 				const response = await fetch("/api/events", {
@@ -101,20 +57,23 @@
 				}
 
 				const data = await response.json()
-				console.log("Event saved successfully:", data)
+				console.log(
+					`Event ${isUpdate ? "updated" : "posted"} successfully:`,
+					data
+				)
 
-				if (existingEventIndex !== -1) {
-					events[existingEventIndex] = {
-						...newEvent,
-						date: new Date(eventDate),
-					}
+				if (isUpdate) {
+					events[existingEventIndex] = newEvent
 				} else {
-					events.push({ ...newEvent, date: new Date(eventDate) })
+					events.push(newEvent)
 				}
 
 				events = [...events]
 			} catch (error) {
-				console.error("Error saving event:", error)
+				console.error(
+					`Error ${isUpdate ? "updating" : "posting"} event:`,
+					error
+				)
 			}
 
 			showModal = false
@@ -157,11 +116,8 @@
 
 		{#each Array(getDaysInMonth(month, year)) as _, i}
 			{@const day = i + 1}
-			{@const event = events.find(
-				(event) =>
-					event.date.toDateString() ===
-					new Date(year, month, day).toDateString()
-			)}
+			{@const currentDate = `${year}-${(month + 1).toString().padStart(2, "0")}-${day.toString().padStart(2, "0")}`}
+			{@const event = events.find((event) => event.date === currentDate)}
 			<button
 				class="p-2 border border-gray-200 cursor-pointer hover:bg-gray-100 relative {event?.mood ===
 				'good'
@@ -187,7 +143,7 @@
 		class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center"
 	>
 		<div class="bg-white p-6 rounded-lg shadow-lg">
-			<h3 class="text-lg font-bold mb-4">{selectedDate?.toDateString()}</h3>
+			<h3 class="text-lg font-bold mb-4">{selectedDate}</h3>
 			<div class="flex space-x-4 mb-4">
 				<label class="flex items-center cursor-pointer">
 					<input type="radio" bind:group={mood} value="good" class="hidden" />

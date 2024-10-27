@@ -5,7 +5,7 @@ export async function load() {
 	return {
 		events: result.rows.map((event) => ({
 			...event,
-			date: new Date(event.date),
+			date: event.date,
 		})),
 	}
 }
