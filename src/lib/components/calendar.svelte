@@ -79,10 +79,10 @@
 	}
 </script>
 
-<div class="max-w-4xl mx-auto p-4">
+<div class="max-w-4xl mx-auto p-4 bg-white rounded-lg">
 	<div class="flex justify-between items-center mb-4">
 		<button
-			class="px-4 py-2 bg-blue-500 text-white rounded"
+			class="px-4 py-2 bg-black text-white rounded"
 			on:click={() => changeMonth(-1)}>&lt;</button
 		>
 		<h2 class="text-2xl font-bold">
@@ -92,7 +92,7 @@
 			})}
 		</h2>
 		<button
-			class="px-4 py-2 bg-blue-500 text-white rounded"
+			class="px-4 py-2 bg-black text-white rounded"
 			on:click={() => changeMonth(1)}>&gt;</button
 		>
 	</div>

@@ -5,8 +5,6 @@
 	export let data: { events: Event[] }
 	let events: Event[] = data.events
 
-	console.log(data)
-
 	let accessCode = ""
 	let correctAccess = false
 	let errorMessage = ""
@@ -24,35 +22,17 @@
 		if (data.success) {
 			correctAccess = true
 			errorMessage = ""
-
-			// try {
-			// 	const eventsResponse = await fetch("http://localhost:8080/events")
-			// 	if (!eventsResponse.ok) {
-			// 		throw new Error(`HTTP error! status: ${eventsResponse.status}`)
-			// 	}
-			// 	const eventsData = await eventsResponse.json()
-
-			// 	eventData = eventsData.map((event: Event) => ({
-			// 		...event,
-			// 		date: new Date(event.date),
-			// 	}))
-			// 	console.log(eventData)
-			// } catch (error) {
-			// 	console.error("Failed to fetch events:", error)
-			// 	errorMessage = "Failed to load events. Please try again."
-			// 	correctAccess = false
-			// }
 		} else {
 			errorMessage = "Access denied. Incorrect code."
 		}
 	}
 </script>
 
-<section class="py-10">
+<section class="py-10 bg-bg-gothic h-screen">
 	<div class="inner">
 		{#if !correctAccess}
-			<div class="max-w-lg mx-auto">
-				<div>
+			<div class="max-w-lg mx-auto bg-white p-4 rounded-lg">
+				<div class="">
 					<h1 class="text-2xl font-bold mb-4">Enter Access Code</h1>
 					<input
 						type="password"
@@ -62,7 +42,7 @@
 					/>
 				</div>
 				<button
-					class="w-full p-2 bg-blue-500 text-white rounded"
+					class="w-full p-2 bg-black text-white rounded"
 					on:click={handleCodeSubmit}>Submit Code</button
 				>
 				{#if errorMessage}
